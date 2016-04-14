@@ -32,8 +32,9 @@ pixels=()
 # Takes number, prints hex bytes in little endian
 # e.g. hexle32 3142 will output 46 0c 00 00
 hexle32() {
-    printf -v _num "%08x" "$1"
-    retval="${_num:6:2} ${_num:4:2} ${_num:2:2} ${_num:0:2}"
+    local num
+    printf -v num "%08x" "$1"
+    retval="${num:6:2} ${num:4:2} ${num:2:2} ${num:0:2}"
 }
 
 errmsg() {
@@ -45,10 +46,12 @@ errmsg() {
 # v1 is the most compatible, but the graph will be opaque - no alpha support.
 # v5 supports alpha channel.
 make_bmp_header() {
+    local headerbytes comp pixoffset filebytes _filebytes _pixoffset
+    local _headerbytes _width _height _pixbytes
     bmp_header=()
     headerbytes=40
     comp="00"
-    if [ "$bmp_vers" -eq 5 ]; then
+    if [ "$bmp_ver" -eq 5 ]; then
         headerbytes=124
         comp="03"
     fi
@@ -87,7 +90,7 @@ make_bmp_header() {
         00 00 00 00             # colors in palette
         00 00 00 00             # all colors are important
     )
-    if [ "$bmp_vers" -eq 5 ]; then
+    if [ "$bmp_ver" -eq 5 ]; then
         bmp_header+=(
             00 00 ff 00             # red channel mask (BGRA)
             00 ff 00 00             # green channel mask
@@ -109,15 +112,17 @@ make_bmp_header() {
 
 # point x y
 point() {
-    _off=$(($2 * rowbytes + $1 * bpp))
-    pixels[$_off]=${curcol[0]}
-    pixels[$((_off + 1))]=${curcol[1]}
-    pixels[$((_off + 2))]=${curcol[2]}
-    pixels[$((_off + 3))]=${curcol[3]}
+    local off
+    off=$(($2 * rowbytes + $1 * bpp))
+    pixels[$off]=${curcol[0]}
+    pixels[$((off + 1))]=${curcol[1]}
+    pixels[$((off + 2))]=${curcol[2]}
+    pixels[$((off + 3))]=${curcol[3]}
 }
 
 # line x1 y1 x2 y2
 line() {
+    local x1 y1 x2 y2 x y
     if [ "$1" -eq "$3" ]; then
         if [ "$2" -gt "$4" ]; then y1=$4; y2=$2; else y1=$2; y2=$4; fi
         for ((y = y1; y <= y2; y++)); do
@@ -135,6 +140,7 @@ line() {
 
 # fill x y w h
 function fill() {
+    local x2 y2 y
     x2=$(($1 + $3 - 1))
     y2=$(($2 + $4 - 1))
     for ((y = $2; y <= y2; y++)); do
@@ -144,6 +150,7 @@ function fill() {
 
 # rect x y w h
 function rect() {
+    local x2 y2
     x2=$(($1 + $3 - 1))
     y2=$(($2 + $4 - 1))
     line "$1" "$2" $x2 "$2"
@@ -162,9 +169,9 @@ output_bmp() {
     IFS=$OLDIFS
 }
 
-# init_bmp bmp_vers width height
+# init_bmp bmp_ver width height
 init_bmp() {
-    bmp_vers=${1:-$bmp_vers}
+    bmp_ver=${1:-$bmp_ver}
     width=${2:-$width}
     height=${3:-$height}
 
