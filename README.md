@@ -44,11 +44,6 @@ Drawing primitives set the current color. No alpha blending is done.
 
 produces this 32x32 BMP: ![swiss flag](https://raw.github.com/ganeshv/bitbash/master/test/ref/swiss.v1.bmp)
 
-(scaled up)
-
-<img src="https://raw.github.com/ganeshv/bitbash/master/test/ref/swiss.v1.bmp" alt="swiss flag" width=200/>
-
-
 ### Bar graph
 
     pixels=()
@@ -64,6 +59,3 @@ produces this 32x32 BMP: ![swiss flag](https://raw.github.com/ganeshv/bitbash/ma
     output_bmp >/tmp/graph.bmp
 
 produces the following 25x16 BMP: ![bar graph](https://raw.github.com/ganeshv/bitbash/master/test/ref/mtop2.v5.bmp)
-
-(scaled up)
-<img src="https://raw.github.com/ganeshv/bitbash/master/test/ref/mtop2.v5.bmp" alt="bar graph" width=200/>
