@@ -175,6 +175,7 @@ output_bmp() {
 
 # init_bmp bmp_ver width height
 init_bmp() {
+    local i
     bmp_ver=${1:-$bmp_ver}
     width=${2:-$width}
     height=${3:-$height}
